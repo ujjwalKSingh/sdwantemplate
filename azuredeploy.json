@@ -54,7 +54,7 @@
     "storageAccountType": "Standard_LRS",
 
     "imagePublisher": "Citrix",
-    "imageOffer": "Netscaler SD-WAN Standard Edition",
+    "imageOffer": "NetScaler SD-WAN Standard Edition",
 
     "nic1Name": "sdwanwannic1",
     "nic2Name": "sdwanlannic1",
@@ -269,7 +269,7 @@
             "version": "latest"
           },
           "osDisk": {
-            "createOption": "Gallery"
+            "createOption": "FromImage"
           }
         }
       }
