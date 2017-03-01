@@ -39,6 +39,13 @@
         		"description": "Size of the VM"
       		}
     	},
+	"dnsLabelPrefix": {
+      		"type": "string",
+      		"defaultValue": "sdwanvmdns",
+      		"metadata": {
+        		"description": "Unique DNS Name for the Public IP used to access the Virtual Machine."
+      		}
+        },
     	"SDWANOSVersion": {
       		"type": "string",
       		"defaultValue": "9.2.0.89",
@@ -136,6 +143,9 @@
       		"location": "[resourceGroup().location]",
       		"name": "[variables('publicIPAddressName')]",
       		"properties": {
+			"dnsSettings": {
+          			"domainNameLabel": "[parameters('dnsLabelPrefix')]"
+        		},
         		"idleTimeoutInMinutes": 30,
         		"publicIPAllocationMethod": "[variables('publicIPAddressType')]"
       		}
