@@ -2,6 +2,19 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
   "contentVersion": "1.0.0.0",
   "parameters": {
+   "adminUsername": {
+      "type": "string",
+      "defaultValue": "sdwantestuser",
+      "metadata": {
+        "description": "User name for the Virtual Machine."
+      }
+    },
+    "adminPassword": {
+       "type": "securestring",
+       "metadata": {
+       "description": "Admin password"
+       }
+    },
    "vmName": {
       "type": "string",
       "defaultValue": "Netscaler SD-WAN Standard Edition",
@@ -29,7 +42,7 @@
       "type": "string",
       "defaultValue": "9.2.0.89",
       "metadata": {
-        "description": "Deploy SD-WAN VM."
+        "description": "Netscaler SD-WAN Standard Edition VM version 9.2.0-89 beta edition."
       }
     }
   },
@@ -37,15 +50,39 @@
     "apiVersion": "2015-06-15",
     "location": "[resourceGroup().location]",
 
-    "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'samultinic')]",
+    "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'sdwanstorageaccount')]",
     "storageAccountType": "Standard_LRS",
 
     "imagePublisher": "Citrix",
     "imageOffer": "Netscaler SD-WAN Standard Edition",
 
-    "nic1Name": "sdwanwannic",
-    "nic2Name": "sdwanlannic",
-	"nic3Name": "sdwanmgmtnic"
+    "nic1Name": "sdwanwannic1",
+    "nic2Name": "sdwanlannic1",
+    "nic3Name": "sdwanmgmtnic1",
+
+    "vnetName": "vnet",
+    "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
+    "addressPrefix": "10.0.0.0/16",
+
+    "subnet1Name": "sdwanwansubnet1",
+    "subnet1Id": "[concat(variables('vnetId'), '/subnets/', variables('subnet1Name'))]",
+    "subnet1Prefix": "10.0.1.0/24",
+    "subnet1PrivateAddress": "10.0.1.5",
+
+    "subnet2Name": "sdwanlansubnet1",
+    "subnet2Id": "[concat(variables('vnetId'), '/subnets/', variables('subnet2Name'))]",
+    "subnet2Prefix": "10.0.2.0/24",
+    "subnet2PrivateAddress": "10.0.2.5",
+
+    "subnet3Name": "sdwanmgmtsubnet1",
+    "subnet3Id": "[concat(variables('vnetId'), '/subnets/', variables('subnet2Name'))]",
+    "subnet3Prefix": "10.0.3.0/24",
+    "subnet3PrivateAddress": "10.0.3.5",
+	
+    "publicIPAddressName": "[concat(uniquestring(resourceGroup().id), 'SDWANPublicIp')]",
+    "publicIPAddressType": "Dynamic",
+    "publicIPAddressId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))]"
+
   },
   "resources": [
     {
@@ -58,8 +95,58 @@
       }
     },
     {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "[variables('apiVersion')]",
+      "location": "[resourceGroup().location]",
+      "name": "[variables('vnetName')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('addressPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('subnet1Name')]",
+            "properties": {
+              "addressPrefix": "[variables('subnet1Prefix')]"
+            }
+          },
+		  {
+            "name": "[variables('subnet2Name')]",
+            "properties": {
+              "addressPrefix": "[variables('subnet2Prefix')]"
+            }
+          },
+          {
+            "name": "[variables('subnet3Name')]",
+            "properties": {
+              "addressPrefix": "[variables('subnet3Prefix')]"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "[variables('apiVersion')]",
+      "location": "[resourceGroup().location]",
+      "name": "[variables('publicIPAddressName')]",
+      "properties": {
+        "dnsSettings": {
+          "domainNameLabel": "[parameters('vmName')]"
+        },
+        "idleTimeoutInMinutes": 30,
+        "publicIPAllocationMethod": "[variables('publicIPAddressType')]"
+      }
+    },
+    {
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "[variables('apiVersion')]",
+      "dependsOn": [
+        "[variables('vnetId')]",
+        "[variables('publicIPAddressId')]"
+      ],
       "location": "[resourceGroup().location]",
       "name": "[variables('nic1Name')]",
       "properties": {
@@ -67,7 +154,14 @@
           {
             "name": "ipconfig1",
             "properties": {
-              "privateIPAllocationMethod": "Static"
+              "privateIPAddress": "[variables('subnet1PrivateAddress')]",
+              "privateIPAllocationMethod": "Static",
+              "PublicIpAddress": {
+                "Id": "[variables('publicIPAddressId')]"
+              },
+              "subnet": {
+                "id": "[variables('subnet1Id')]"
+              }
             }
           }
         ]
@@ -76,6 +170,9 @@
     {
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "[variables('apiVersion')]",
+      "dependsOn": [
+        "[variables('vnetId')]"
+      ],
       "location": "[resourceGroup().location]",
       "name": "[variables('nic2Name')]",
       "properties": {
@@ -83,7 +180,11 @@
           {
             "name": "ipconfig2",
             "properties": {
-              "privateIPAllocationMethod": "Static"
+              "privateIPAddress": "[variables('subnet2PrivateAddress')]",
+              "privateIPAllocationMethod": "Static",
+              "subnet": {
+                "id": "[variables('subnet2Id')]"
+              }
             }
           }
         ]
@@ -92,6 +193,9 @@
 	{
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "[variables('apiVersion')]",
+      "dependsOn": [
+        "[variables('vnetId')]"
+      ],
       "location": "[resourceGroup().location]",
       "name": "[variables('nic3Name')]",
       "properties": {
@@ -99,7 +203,11 @@
           {
             "name": "ipconfig3",
             "properties": {
-              "privateIPAllocationMethod": "Static"
+              "privateIPAddress": "[variables('subnet3PrivateAddress')]",
+              "privateIPAllocationMethod": "Static",
+              "subnet": {
+                "id": "[variables('subnet3Id')]"
+              }
             }
           }
         ]
@@ -112,7 +220,7 @@
         "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
         "[concat('Microsoft.Network/networkInterfaces/', variables('nic1Name'))]",
         "[concat('Microsoft.Network/networkInterfaces/', variables('nic2Name'))]",
-		"[concat('Microsoft.Network/networkInterfaces/', variables('nic3Name'))]"
+	"[concat('Microsoft.Network/networkInterfaces/', variables('nic3Name'))]"
       ],
       "location": "[resourceGroup().location]",
       "name": "[parameters('vmName')]",
@@ -151,9 +259,7 @@
         "osProfile": {
           "computerName": "[parameters('vmName')]",
           "adminUsername": "[parameters('adminUsername')]",
-          "linuxConfiguration": {
-            "disablePasswordAuthentication": "false"
-          }
+          "adminPassword": "[parameters('adminPassword')]"
         },
         "storageProfile": {
           "imageReference": {
