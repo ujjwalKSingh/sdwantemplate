@@ -18,7 +18,7 @@
     	},
    		"vmName": {
       		"type": "string",
-      		"defaultValue": "Netscaler SD-WAN Standard Edition",
+      		"defaultValue": "NetscalerSDWANSE1",
       		"metadata": {
         		"description": "Name of the VM"
       		}
