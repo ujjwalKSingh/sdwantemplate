@@ -48,7 +48,7 @@
         },
     	"SDWANOSVersion": {
       		"type": "string",
-      		"defaultValue": "9.2.0.89",
+      		"defaultValue": "netscalersd-wanstandardedition",
       		"metadata": {
         		"description": "Netscaler SD-WAN Standard Edition VM version 9.2.0-89 beta edition."
       		}
@@ -62,8 +62,8 @@
     	"storageAccountName": "[concat(uniquestring(resourceGroup().id), 'sdwanimage')]",
     	"storageAccountType": "Standard_LRS",
 
-    	"imagePublisher": "Citrix",
-    	"imageOffer": "NETSCALERSD-WANSTANDARDEDITION",
+    	"imagePublisher": "citrix",
+    	"imageOffer": "netscaler-sd-wan",
 
     	"nic1Name": "wannic1",
     	"nic2Name": "lannic1",
