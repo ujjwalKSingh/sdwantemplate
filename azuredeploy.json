@@ -63,7 +63,7 @@
     	"storageAccountType": "Standard_LRS",
 
     	"imagePublisher": "Citrix",
-    	"imageOffer": "NetScaler SD-WAN Standard Edition",
+    	"imageOffer": "NETSCALERSD-WANSTANDARDEDITION",
 
     	"nic1Name": "wannic1",
     	"nic2Name": "lannic1",
