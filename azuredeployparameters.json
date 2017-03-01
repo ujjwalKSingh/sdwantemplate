@@ -1,18 +1,15 @@
 {
-  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "storageAccountName": {
-      "value": "GEN-UNIQUE"
+    "adminUsername": {
+      "value": "sdwantestuser"
     },
-	"vmName": {
-      "value": "Netscaler SD-WAN Standard Edition"
+    "adminPassword": {
+      "value" : "" 
     },
-    "vmSize": {
-      "value": "Standard_D3_v2"
-    },
-	"adminUsername": {
-      "value": "admin"
+    "vmName": {
+      "value": "Netscaler SDWAN Standard Edition"
     }
   }
 }
