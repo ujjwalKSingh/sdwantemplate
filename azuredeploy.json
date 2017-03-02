@@ -20,6 +20,12 @@
                 "description": "Admin password"
             }
         },
+        "dnsNameforLBIP": {
+            "type": "string",
+            "metadata": {
+                "description": "DNS for Load Balancer IP"
+            }
+        },
         "vmSize": {
             "type": "string",
             "defaultValue": "Standard_D3_v2",
