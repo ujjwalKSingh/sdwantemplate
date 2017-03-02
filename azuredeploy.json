@@ -3,6 +3,12 @@
   	"contentVersion": "1.0.0.0",
   	
 	"parameters": {
+		 "storageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of storage account"
+            }
+        },
    		"adminUsername": {
       			"type": "string",
       			"defaultValue": "sdwanuser",
@@ -278,9 +284,14 @@
             			"sku": "[parameters('SDWANOSVersion')]",
             			"version": "latest"
 					},
-					"osDisk": {
-            			"createOption": "FromImage"
-					}
+				"osDisk": {
+                           		 "name": "osdisk",
+                            		"vhd": {
+                               			 "uri": "[concat('http://',parameters('storageAccountName'),'.blob.core.windows.net/vhds/','osdisk', '.vhd')]"
+                            		},
+                            		"caching": "ReadWrite",
+                            		"createOption": "FromImage"
+                        	}
 				}
 			}
 		}
