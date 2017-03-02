@@ -1,7 +1,7 @@
 {
-  "itemDisplayName": "Deploy a Netscaler SD-WAN Standard Edition VM with multiple NICs",
-  "description": "This template creates a VNet with multiple subnets and deploys a VM with multiple NICs",
-  "summary": "This template creates a VNet with multiple subnets and deploys a VM with multiple NICs",
-  "githubUsername": "ujjwalKSingh",
-  "dateUpdated": "2017-02-28"
+  "itemDisplayName": "Create a VM with multiple NICs and RDP accessible",
+  "description": "This template allows you to create a Virtual Machines with multiple (2) network interfaces (NICs), and RDP connectable with a configured load balancer and an inbound NAT rule. More NICs can easily  be added with this template. This template also deploys a Storage Account, Virtual Network, Public IP address, and 2 Network Interfaces (front-end and back-end).",
+  "summary": "Create a VM with multiple network interfaces and RDP accessible",
+  "githubUsername": "colincole",
+  "dateUpdated": "2015-06-18"
 }
