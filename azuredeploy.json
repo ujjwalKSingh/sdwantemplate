@@ -20,7 +20,7 @@
                 "description": "Admin password"
             }
         },
-        "dnsNameforLBIP": {
+        "dnsNameforSDWAN": {
             "type": "string",
             "metadata": {
                 "description": "DNS for Load Balancer IP"
@@ -41,13 +41,12 @@
             "subnetPrefix": "10.0.0.0/24",
             "publicIPAddressType": "Dynamic",
             "nic1NamePrefix": "nic1",
-            "nic2NamePrefix": "nic2",
             "imagePublisher": "Citrix",
             "imageOffer": "netscaler-sd-wan",
             "imageSKU": "netscalersd-wanstandardedition",
-            "vnetName": "myVNET",
-            "publicIPAddressName": "myPublicIP",
-            "vmNamePrefix": "mySDWANVM",
+            "vnetName": "sdwanVNET",
+            "publicIPAddressName": "sdwanPublicIP",
+            "vmNamePrefix": "SDWAN-VM",
             "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('vnetName'))]",
             "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
             "publicIPAddressID": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]"
@@ -116,35 +115,12 @@
             },
             {
                 "apiVersion": "2015-05-01-preview",
-                "type": "Microsoft.Network/networkInterfaces",
-                "name": "[variables('nic2NamePrefix')]",
-                "location": "[resourceGroup().location]",
-                "dependsOn": [
-                    "[concat('Microsoft.Network/virtualNetworks/', variables('vnetName'))]"
-                ],
-                "properties": {
-                    "ipConfigurations": [
-                        {
-                            "name": "ipconfig1",
-                            "properties": {
-                                "privateIPAllocationMethod": "Dynamic",
-                                "subnet": {
-                                    "id": "[variables('subnetRef')]"
-                                }
-                            }
-                        }
-                    ]
-                }
-            },
-            {
-                "apiVersion": "2015-05-01-preview",
                 "type": "Microsoft.Compute/virtualMachines",
                 "name": "[variables('vmNamePrefix')]",
                 "location": "[resourceGroup().location]",
                 "dependsOn": [
                     "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]",
-                    "[concat('Microsoft.Network/networkInterfaces/', variables('nic1NamePrefix'))]",
-                    "[concat('Microsoft.Network/networkInterfaces/', variables('nic2NamePrefix'))]"
+                    "[concat('Microsoft.Network/networkInterfaces/', variables('nic1NamePrefix'))]"
                 ],
                 "properties": {
                     "hardwareProfile": {
@@ -178,12 +154,6 @@
                                     "primary": true
                                 },
                                 "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nic1NamePrefix'))]"
-                            },
-                            {
-                                "properties": {
-                                    "primary": false
-                                },
-                                "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nic2NamePrefix'))]"
                             }
                         ]
                     }
