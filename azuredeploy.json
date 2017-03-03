@@ -46,6 +46,7 @@
             "imageSKU": "netscalersd-wanstandardedition",
             "vnetName": "sdwanVNET",
             "publicIPAddressName": "sdwanPublicIP",
+            "sdwandisk": "sdwanvhd",
             "vmNamePrefix": "SDWAN-VM",
             "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('vnetName'))]",
             "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
@@ -139,7 +140,7 @@
                             "version": "latest"
                         },
                         "osDisk": {
-                            "name": "osdisk",
+                            "name": "[variables('sdwandisk')]",
                             "vhd": {
                                 "uri": "[concat('http://',parameters('storageAccountName'),'.blob.core.windows.net/vhds/','osdisk', '.vhd')]"
                             },
