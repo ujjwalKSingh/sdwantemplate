@@ -139,7 +139,7 @@
                             "version": "latest"
                         },
                         "osDisk": {
-                            "name": "osdisk",
+                            "name": "sdwanvhd",
                             "vhd": {
                                 "uri": "[concat('http://',parameters('storageAccountName'),'.blob.core.windows.net/vhds/','osdisk', '.vhd')]"
                             },
