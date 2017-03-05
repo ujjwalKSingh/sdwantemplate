@@ -123,6 +123,11 @@
                     "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]",
                     "[concat('Microsoft.Network/networkInterfaces/', variables('nic1NamePrefix'))]"
                 ],
+                "plan": {
+                    "name": "[variables('imageSKU')]",
+                    "publisher": "[variables('imagePublisher')]",
+                    "product": "[variables('imageOffer')]"
+                },
                 "properties": {
                     "hardwareProfile": {
                         "vmSize": "[parameters('vmSize')]"
@@ -138,11 +143,6 @@
                             "offer": "[variables('imageOffer')]",
                             "sku": "[variables('imageSKU')]",
                             "version": "latest"
-                        },
-                        "plan": {
-                            "publisher": "[variables('imagePublisher')]",
-                            "name": "[variables('imageOffer')]",
-                            "product": "sdwanvmseries1"
                         },
                         "osDisk": {
                             "name": "[variables('sdwandisk')]",
