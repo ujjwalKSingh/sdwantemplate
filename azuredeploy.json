@@ -139,6 +139,11 @@
                             "sku": "[variables('imageSKU')]",
                             "version": "latest"
                         },
+                        "plan": {
+                            "publisher": "[variables('imagePublisher')]",
+                            "name": "[variables('imageOffer')]",
+                            "product": "sdwanvmseries1"
+                        },
                         "osDisk": {
                             "name": "[variables('sdwandisk')]",
                             "vhd": {
