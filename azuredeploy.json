@@ -126,7 +126,8 @@
                 "plan": {
                     "name": "[variables('imageSKU')]",
                     "publisher": "[variables('imagePublisher')]",
-                    "product": "[variables('imageOffer')]"
+                    "product": "[variables('imageOffer')]",
+                    "promotionCode": null
                 },
                 "properties": {
                     "hardwareProfile": {
