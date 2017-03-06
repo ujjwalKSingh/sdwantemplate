@@ -1,4 +1,5 @@
 {
+	"location": { "value": "East US" },
 	"ImageStorageAccountName": {  "value" : "" },
 	"ImageStorageContainerName": {  "value" : "" },
 	"ImageStorageAccountType": { "value" : "Standard_LRS" },
