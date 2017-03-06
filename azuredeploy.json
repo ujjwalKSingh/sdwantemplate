@@ -213,7 +213,7 @@
             {
                 "apiVersion": "2015-05-01-preview",
                 "type": "Microsoft.Compute/virtualMachines",
-                "name": "[variables('VMName')]",
+                "name": "[parameters('VMName')]",
                 "location": "[resourceGroup().location]",
                 "dependsOn": [
                     "[concat('Microsoft.Storage/storageAccounts/', parameters('ImageStorageAccountName'))]",
@@ -232,7 +232,7 @@
                         "vmSize": "[parameters('VMSize')]"
                     },
                     "osProfile": {
-                        "computername": "[variables('VMName')]",
+                        "computername": "[parameters('VMName')]",
                         "adminUsername": "[parameters('AdminUsername')]",
                         "adminPassword": "[parameters('AdminPassword')]"
                     },
