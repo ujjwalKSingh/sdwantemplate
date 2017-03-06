@@ -83,7 +83,7 @@
             "PublicIPAddressName": "sdwanPublicIP",
             
 			"SDWANvhd": "Netscaler-SDWAN",
-			"SDWANDisk": "[concat('http://',parameters('ImageStorageAccountName'),'.blob.core.windows.net/',parameters('ImageStorageContainerName'),'/',parameters('VMName'),'_osDisk.vhd')]",
+			"SDWANDisk": "[concat('http://',parameters('ImageStorageAccountName'),'.blob.core.windows.net/',parameters('ImageStorageContainerName'),'/',variables('SDWANvhd'),'_osDisk.vhd')]",
             "VNETID": "[resourceId('Microsoft.Network/virtualNetworks',variables('VNETName'))]",
 			
             "Subnet1Ref": "[concat(variables('VNETID'),'/subnets/',variables('Subnet1Name'))]",
