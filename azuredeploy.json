@@ -2,31 +2,56 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "storageAccountName": {
+        "ImageStorageAccountName": {
             "type": "string",
             "metadata": {
-                "description": "Name of storage account"
+                "description": "Name of image storage account name."
             }
         },
-        "adminUsername": {
+        "ImageStorageContainerName": {
             "type": "string",
             "metadata": {
-                "description": "Admin username"
+                "description": "Name of image container name."
             }
         },
-        "adminPassword": {
+        "ImageStorageAccountType": {
+            "type": "string",
+            "defaultValue": "Standard_LRS",
+            "allowedValues": [
+                "Standard_LRS",
+                "Standard_GRS",
+                "Standard_RAGRS",
+                "Premium_LRS"
+      		],
+            "metadata": {
+        		"description": "Storage account type."
+      		}
+        },
+		"VMName": {
+			"type": "string",
+			"metadata": {
+                "description": "VM Name."
+            }
+		},
+        "AdminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "Admin username. It will give viewer access."
+            }
+        },
+        "AdminPassword": {
             "type": "securestring",
             "metadata": {
-                "description": "Admin password"
+                "description": "Admin password."
             }
         },
-        "dnsNameforSDWAN": {
+        "DnsNameForVM": {
             "type": "string",
             "metadata": {
-                "description": "DNS for Load Balancer IP"
+                "description": "DNS Name for VM."
             }
         },
-        "vmSize": {
+        "VMSize": {
             "type": "string",
             "defaultValue": "Standard_D3_v2",
             "metadata": {
@@ -35,58 +60,85 @@
         }
     },
         "variables": {
-            "storageAccountType": "Standard_LRS",
-            "addressPrefix": "10.0.0.0/16",
-            "subnetName": "Subnet-1",
-            "subnetPrefix": "10.0.0.0/24",
-            "publicIPAddressType": "Dynamic",
-            "nic1NamePrefix": "nic1",
-            "imagePublisher": "citrix",
-            "imageOffer": "netscaler-sd-wan",
-            "imageSKU": "netscalersd-wanstandardedition",
-            "vnetName": "sdwanVNET",
-            "publicIPAddressName": "sdwanPublicIP",
-            "sdwandisk": "sdwanvhd",
-            "vmNamePrefix": "SDWAN-VM",
-            "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('vnetName'))]",
-            "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
-            "publicIPAddressID": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]"
+            "AddressPrefix": "10.0.0.0/16",
+			
+            "Subnet1Name": "Subnet-wan1",
+			"Subnet2Name": "Subnet-lan1",
+			"Subnet3Name": "Subnet-mgt1",
+			
+            "Subnet1Prefix": "10.0.0.0/24",
+			"Subnet2Prefix": "10.0.1.0/24",
+			"Subnet3Prefix": "10.0.2.0/24",
+			
+            "PublicIPAddressType": "Dynamic",
+            "Nic1NamePrefix": "wan-nic1",
+			"Nic2NamePrefix": "lan-nic1",
+			"Nic3NamePrefix": "mgt-nic1",
+			
+            "ImagePublisher": "citrix",
+            "ImageOffer": "netscaler-sd-wan",
+            "ImageSKU": "netscalersd-wanstandardedition",
+			
+            "VNETName": "sdwanVNET",
+            "PublicIPAddressName": "sdwanPublicIP",
+            
+			"SDWANvhd": "Netscaler-SDWAN",
+			"SDWANDisk": "[concat('http://',parameters('ImageStorageAccountName'),'.blob.core.windows.net/',parameters('ImageStorageContainerName'),'/',parameters('VMName'),'_osDisk.vhd')]",
+            "VNETID": "[resourceId('Microsoft.Network/virtualNetworks',variables('VNETName'))]",
+			
+            "Subnet1Ref": "[concat(variables('VNETID'),'/subnets/',variables('Subnet1Name'))]",
+			"Subnet2Ref": "[concat(variables('VNETID'),'/subnets/',variables('Subnet2Name'))]",
+			"Subnet3Ref": "[concat(variables('VNETID'),'/subnets/',variables('Subnet3Name'))]",
+			
+            "PublicIPAddressID": "[resourceId('Microsoft.Network/publicIPAddresses',variables('PublicIPAddressName'))]"
         },
         "resources": [
             {
                 "type": "Microsoft.Storage/storageAccounts",
-                "name": "[parameters('storageAccountName')]",
+                "name": "[parameters('ImageStorageAccountName')]",
                 "apiVersion": "2015-05-01-preview",
                 "location": "[resourceGroup().location]",
                 "properties": {
-                    "accountType": "[variables('storageAccountType')]"
+                    "accountType": "[parameters('ImageStorageAccountType')]"
                 }
             },
             {
                 "apiVersion": "2015-05-01-preview",
                 "type": "Microsoft.Network/publicIPAddresses",
-                "name": "[variables('publicIPAddressName')]",
+                "name": "[variables('PublicIPAddressName')]",
                 "location": "[resourceGroup().location]",
                 "properties": {
-                    "publicIPAllocationMethod": "[variables('publicIPAddressType')]"
+                    "publicIPAllocationMethod": "[variables('PublicIPAddressType')]"
                 }
             },
             {
                 "apiVersion": "2015-05-01-preview",
                 "type": "Microsoft.Network/virtualNetworks",
-                "name": "[variables('vnetName')]",
+                "name": "[variables('VNETName')]",
                 "location": "[resourceGroup().location]",
                 "properties": {
                     "addressSpace": {
                         "addressPrefixes": [
-                            "[variables('addressPrefix')]"
+                            "[variables('AddressPrefix')]"
                         ]
                     },
                     "subnets": [
                         {
-                            "name": "[variables('subnetName')]",
+                            "name": "[variables('Subnet1Name')]",
                             "properties": {
-                                "addressPrefix": "[variables('subnetPrefix')]"
+                                "addressPrefix": "[variables('Subnet1Prefix')]"
+                            }
+                        },
+						{
+                            "name": "[variables('Subnet2Name')]",
+                            "properties": {
+                                "addressPrefix": "[variables('Subnet2Prefix')]"
+                            }
+                        },
+						{
+                            "name": "[variables('Subnet3Name')]",
+                            "properties": {
+                                "addressPrefix": "[variables('Subnet3Prefix')]"
                             }
                         }
                     ]
@@ -95,10 +147,10 @@
             {
                 "apiVersion": "2015-05-01-preview",
                 "type": "Microsoft.Network/networkInterfaces",
-                "name": "[variables('nic1NamePrefix')]",
+                "name": "[variables('Nic1NamePrefix')]",
                 "location": "[resourceGroup().location]",
                 "dependsOn": [
-                    "[concat('Microsoft.Network/virtualNetworks/', variables('vnetName'))]"
+                    "[concat('Microsoft.Network/virtualNetworks/', variables('VNETName'))]"
                 ],
                 "properties": {
                     "ipConfigurations": [
@@ -107,7 +159,51 @@
                             "properties": {
                                 "privateIPAllocationMethod": "Dynamic",
                                 "subnet": {
-                                    "id": "[variables('subnetRef')]"
+                                    "id": "[variables('Subnet1Ref')]"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+			{
+                "apiVersion": "2015-05-01-preview",
+                "type": "Microsoft.Network/networkInterfaces",
+                "name": "[variables('Nic2NamePrefix')]",
+                "location": "[resourceGroup().location]",
+                "dependsOn": [
+                    "[concat('Microsoft.Network/virtualNetworks/', variables('VNETName'))]"
+                ],
+                "properties": {
+                    "ipConfigurations": [
+                        {
+                            "name": "ipconfig1",
+                            "properties": {
+                                "privateIPAllocationMethod": "Dynamic",
+                                "subnet": {
+                                    "id": "[variables('Subnet2Ref')]"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+			{
+                "apiVersion": "2015-05-01-preview",
+                "type": "Microsoft.Network/networkInterfaces",
+                "name": "[variables('Nic3NamePrefix')]",
+                "location": "[resourceGroup().location]",
+                "dependsOn": [
+                    "[concat('Microsoft.Network/virtualNetworks/', variables('VNETName'))]"
+                ],
+                "properties": {
+                    "ipConfigurations": [
+                        {
+                            "name": "ipconfig1",
+                            "properties": {
+                                "privateIPAllocationMethod": "Dynamic",
+                                "subnet": {
+                                    "id": "[variables('Subnet3Ref')]"
                                 }
                             }
                         }
@@ -117,41 +213,44 @@
             {
                 "apiVersion": "2015-05-01-preview",
                 "type": "Microsoft.Compute/virtualMachines",
-                "name": "[variables('vmNamePrefix')]",
+                "name": "[variables('VMName')]",
                 "location": "[resourceGroup().location]",
                 "dependsOn": [
-                    "[concat('Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]",
-                    "[concat('Microsoft.Network/networkInterfaces/', variables('nic1NamePrefix'))]"
+                    "[concat('Microsoft.Storage/storageAccounts/', parameters('ImageStorageAccountName'))]",
+                    "[concat('Microsoft.Network/networkInterfaces/', variables('Nic1NamePrefix'))]",
+					"[concat('Microsoft.Network/networkInterfaces/', variables('Nic2NamePrefix'))]",
+					"[concat('Microsoft.Network/networkInterfaces/', variables('Nic3NamePrefix'))]"
                 ],
                 "plan": {
-                    "name": "[variables('imageSKU')]",
-                    "publisher": "[variables('imagePublisher')]",
-                    "product": "[variables('imageOffer')]",
+                    "name": "[variables('ImageSKU')]",
+                    "publisher": "[variables('ImagePublisher')]",
+                    "product": "[variables('ImageOffer')]",
                     "promotionCode": null
                 },
                 "properties": {
                     "hardwareProfile": {
-                        "vmSize": "[parameters('vmSize')]"
+                        "vmSize": "[parameters('VMSize')]"
                     },
                     "osProfile": {
-                        "computername": "[variables('vmNamePrefix')]",
-                        "adminUsername": "[parameters('adminUsername')]",
-                        "adminPassword": "[parameters('adminPassword')]"
+                        "computername": "[variables('VMName')]",
+                        "adminUsername": "[parameters('AdminUsername')]",
+                        "adminPassword": "[parameters('AdminPassword')]"
                     },
                     "storageProfile": {
                         "imageReference": {
-                            "publisher": "[variables('imagePublisher')]",
-                            "offer": "[variables('imageOffer')]",
-                            "sku": "[variables('imageSKU')]",
+                            "publisher": "[variables('ImagePublisher')]",
+                            "offer": "[variables('ImageOffer')]",
+                            "sku": "[variables('ImageSKU')]",
                             "version": "latest"
                         },
                         "osDisk": {
-                            "name": "[variables('sdwandisk')]",
+                            "name": "[concat(variables('SDWANvhd'),'_osDisk')]",
                             "vhd": {
-                                "uri": "[concat('http://',parameters('storageAccountName'),'.blob.core.windows.net/vhds/','osdisk', '.vhd')]"
+                                "uri": "[variables('SDWANDisk')]"
                             },
                             "caching": "ReadWrite",
-                            "createOption": "FromImage"
+                            "createOption": "FromImage",
+							"osType": "Linux"
                         }
                     },
                     "networkProfile": {
@@ -160,7 +259,19 @@
                                 "properties": {
                                     "primary": true
                                 },
-                                "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nic1NamePrefix'))]"
+                                "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('Nic1NamePrefix'))]"
+                            },
+							{
+                                "properties": {
+                                    "primary": false
+                                },
+                                "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('Nic2NamePrefix'))]"
+                            },
+							{
+                                "properties": {
+                                    "primary": false
+                                },
+                                "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('Nic3NamePrefix'))]"
                             }
                         ]
                     }
