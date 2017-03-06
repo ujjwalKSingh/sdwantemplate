@@ -1,7 +1,10 @@
 {
-	"storageAccountName": {  "value" : "" },
-        "adminUsername": {  "value" : "" },
-        "adminPassword": {  "value" : "" },
-        "dnsNameforLBIP": {  "value" : "" },
-        "vmSize": { "value": "Standard_D3_v2" }
+	"ImageStorageAccountName": {  "value" : "" },
+	"ImageStorageContainerName": {  "value" : "" },
+	"ImageStorageAccountType": { "value" : "Standard_LRS" },
+        "AdminUsername": {  "value" : "" },
+        "AdminPassword": {  "value" : "" },
+        "DnsNameForVM": {  "value" : "" },
+	"VMName": { "value": "" },
+        "VMSize": { "value": "Standard_D3_v2" }
 }
