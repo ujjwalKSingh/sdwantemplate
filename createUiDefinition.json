@@ -1,0 +1,99 @@
+{
+  "handler": "Microsoft.Compute.MultiVm",
+  "version": "0.0.1-preview",
+  "parameters": {
+    "basics": [
+
+    ],
+    "steps": [
+      {
+        "name": "infraConfig",
+        "label": "Deployment settings",
+        "subLabel": {
+          "preValidation": "Configure deployment settings",
+          "postValidation": "Done"
+        },
+        "bladeTitle": "Deployment settings",
+        "elements": [
+          {
+            "name": "AdminSettings",
+            "type": "Microsoft.Common.Section",
+            "label": "Adminstrator Credentials",
+            "elements": [
+              {
+                "name": "AdminUsername",
+                "type": "Microsoft.Common.TextBox",
+                "label": "Administrator's user name",
+                "toolTip": "Specify the administrator user name for NetScaler SD-WAN SE VM. The user name cannot exceed 9 characters.",
+                "defaultValue": "sdwanuser",
+                "constraints": {
+                  "required": true,
+                  "regex": "^(?!admin$)[A-Za-z0-9]{1,9}$",
+                  "validationMessage": "Usernames must be alphanumeric and between 1 and 9 characters in length."
+                }
+              },
+              {
+                "name": "AdminPassword",
+                "type": "Microsoft.Compute.CredentialsCombo",
+                "label": {
+                  "password": "Password",
+                  "confirmPassword": "Confirm password"
+                },
+                "toolTip": {
+                  "password": "Specify the administrator password for NetScaler SD-WAN SE VM."
+                },
+                "constraints": {
+                  "required": true
+                },
+                "osPlatform": "Linux"
+              },
+              {
+                "name": "emailAddress",
+                "type": "Microsoft.Common.TextBox",
+                "label": "Email address",
+                "defaultValue": "",
+                "toolTip": "Specify the email address that that will be used to request a public SSL certificate for NetScaler SD-WAN SE VM on your behalf. This will also be used to notify you when the solution template has deployed successfully.",
+                "constraints": {
+                  "required": true,
+                  "regex": "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$",
+                  "validationMessage": "Must be a valid email address."
+                }
+              }
+
+            ]
+          },
+
+          {
+            "name": "virtualMachineSettings",
+            "type": "Microsoft.Common.Section",
+            "label": "Virtual Machine Settings",
+            "elements": [
+              {
+                "name": "vmSize",
+                "type": "Microsoft.Compute.SizeSelector",
+                "label": "Size",
+                "toolTip": "Specify the size of all the virtual machines in the deployment.",
+                "recommendedSizes": [
+                  "Standard_D3_v2"
+                ],
+                "osPlatform": "Linux",
+                "imageReference": {
+                  "publisher": "citrix",
+                  "offer": "netscaler-sd-wan",
+                  "sku": "netscalersd-wanstandardedition"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "outputs": {
+      "adminUsername": "[steps('infraConfig').AdminSettings.AdminUsername]",
+      "adminPassword": "[steps('infraConfig').AdminSettings.AdminPassword.password]",
+      "emailAddress": "[steps('infraConfig').AdminSettings.emailAddress]",
+      "machineSize": "[steps('infraConfig').virtualMachineSettings.vmSize]",
+      "location":"[location()]"
+    }
+  }
+}
